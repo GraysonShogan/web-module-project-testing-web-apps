@@ -105,4 +105,38 @@ test("renders all firstName, lastName and email text when submitted. Does NOT re
   });
 });
 
-test("renders all fields text when all fields are submitted.", async () => {});
+test("renders all fields text when all fields are submitted.", async () => {
+  render(<ContactForm />);
+
+  const fName = screen.getByLabelText(/First Name*/i);
+  userEvent.type(fName, "onetwothreefourfive");
+
+  const lName = screen.getByLabelText(/Last Name*/i);
+  userEvent.type(lName, "onetwothreefourfive");
+
+  const email = screen.getByLabelText(/Email*/i);
+  userEvent.type(email, "nonvalid@email.adrs");
+
+  const message = screen.getByLabelText(/Message/i);
+  userEvent.type(message, "message!");
+
+  const submitButton = screen.getByRole("button");
+  userEvent.click(submitButton);
+
+  await waitFor(() => {
+    const confirmation = screen.getByText(/You Submitted/i);
+    expect(confirmation).toBeInTheDocument();
+
+    const fNameConf = screen.getByText(/First Name:/i);
+    expect(fNameConf).toBeInTheDocument();
+
+    const lNameConf = screen.getByText(/Last Name:/i);
+    expect(lNameConf).toBeInTheDocument();
+
+    const emailConf = screen.getByText(/Email:/i);
+    expect(emailConf).toBeInTheDocument();
+
+    const messageConf = screen.getByText(/Message:/i);
+    expect(messageConf).toBeInTheDocument();
+  });
+});
